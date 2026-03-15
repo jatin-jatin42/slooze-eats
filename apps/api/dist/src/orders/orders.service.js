@@ -48,7 +48,13 @@ let OrdersService = class OrdersService {
         }
         return order;
     }
-    async createOrder(userId, restaurantId, items) {
+    async createOrder(user, restaurantId, items) {
+        const restaurant = await this.prisma.restaurant.findUnique({ where: { id: restaurantId } });
+        if (!restaurant)
+            throw new common_1.NotFoundException('Restaurant not found');
+        if (user.role !== client_1.Role.ADMIN && restaurant.country !== user.country) {
+            throw new common_1.ForbiddenException('Cannot order from a restaurant outside your country');
+        }
         const menuItems = await this.prisma.menuItem.findMany({
             where: { id: { in: items.map((i) => i.menuItemId) } },
         });
@@ -65,7 +71,7 @@ let OrdersService = class OrdersService {
         const total = orderItems.reduce((sum, i) => sum + i.price, 0);
         return this.prisma.order.create({
             data: {
-                userId,
+                userId: user.id,
                 restaurantId,
                 totalAmount: total,
                 items: { create: orderItems },
@@ -83,6 +89,9 @@ let OrdersService = class OrdersService {
         const order = await this.prisma.order.findUnique({ where: { id: orderId } });
         if (!order)
             throw new common_1.NotFoundException('Order not found');
+        if (user.role !== client_1.Role.ADMIN && order.userId !== user.id) {
+            throw new common_1.ForbiddenException('Cannot checkout another user\'s order');
+        }
         if (order.status !== client_1.OrderStatus.PENDING) {
             throw new common_1.ForbiddenException(`Order is already ${order.status}`);
         }
@@ -91,6 +100,9 @@ let OrdersService = class OrdersService {
         });
         if (!pm)
             throw new common_1.NotFoundException('Payment method not found');
+        if (user.role !== client_1.Role.ADMIN && pm.userId !== user.id) {
+            throw new common_1.ForbiddenException('Cannot use another user\'s payment method');
+        }
         return this.prisma.order.update({
             where: { id: orderId },
             data: { status: client_1.OrderStatus.CONFIRMED, paymentMethodId },
@@ -108,6 +120,9 @@ let OrdersService = class OrdersService {
         const order = await this.prisma.order.findUnique({ where: { id: orderId } });
         if (!order)
             throw new common_1.NotFoundException('Order not found');
+        if (user.role !== client_1.Role.ADMIN && order.userId !== user.id) {
+            throw new common_1.ForbiddenException('Cannot cancel another user\'s order');
+        }
         if (order.status === client_1.OrderStatus.CANCELLED) {
             throw new common_1.ForbiddenException('Order is already cancelled');
         }

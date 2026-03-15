@@ -26,6 +26,11 @@ export default function RestaurantDetailPage() {
     : [];
 
   const handleAdd = (item: any) => {
+    if (cart.length > 0 && cart[0].restaurantId !== restaurant.id) {
+      if (!window.confirm('Adding this item will clear your current cart from another restaurant. Proceed?')) {
+        return;
+      }
+    }
     addToCart({
       menuItemId: item.id,
       name: item.name,
@@ -38,7 +43,6 @@ export default function RestaurantDetailPage() {
   const cartItemQty = (menuItemId: string) =>
     cart.find((i) => i.menuItemId === menuItemId)?.quantity || 0;
 
-  const isCurrency = (price: number) => price < 100;
 
   return (
     <div className="fade-in">
@@ -133,7 +137,7 @@ export default function RestaurantDetailPage() {
                           )}
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--accent)' }}>
-                              {isCurrency(item.price) ? `$${item.price.toFixed(2)}` : `₹${item.price}`}
+                              {restaurant.country === 'INDIA' ? `₹${item.price}` : `$${item.price.toFixed(2)}`}
                             </span>
                             {qty > 0 ? (
                               <span style={{ fontSize: '13px', color: 'var(--success)', fontWeight: 600 }}>

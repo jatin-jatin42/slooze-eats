@@ -1,8 +1,13 @@
+import 'dotenv/config';
 import { PrismaClient, Role, Country, CardType, OrderStatus } from '.prisma/client';
-import { PrismaLibSql } from '@prisma/adapter-libsql';
+import { Pool } from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
 import * as bcrypt from 'bcryptjs';
 
-const adapter = new PrismaLibSql({ url: 'file:dev.db' });
+const connectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || process.env.DATABASE_URL;
+const pool = new Pool({ connectionString });
+//@ts-ignore
+const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter } as any);
 
 async function main() {
@@ -128,7 +133,7 @@ async function main() {
     data: {
       name: 'Biryani House',
       cuisine: 'Indian',
-      image: 'https://images.unsplash.com/photo-1563379091339-03246963d651?w=400',
+      image: 'https://images.unsplash.com/photo-1633945274405-b6c8069047b0?w=400',
       rating: 4.7,
       country: Country.INDIA,
       menuItems: {
@@ -138,7 +143,7 @@ async function main() {
             description: 'Aromatic basmati rice with tender chicken',
             price: 299,
             category: 'Main Course',
-            image: 'https://images.unsplash.com/photo-1563379091339-03246963d651?w=200',
+            image: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=200',
           },
           {
             name: 'Mutton Biryani',
@@ -201,7 +206,7 @@ async function main() {
             description: 'Tandoor-baked bread with garlic butter',
             price: 60,
             category: 'Bread',
-            image: 'https://images.unsplash.com/photo-1573237015185-5c35dbb5527c?w=200',
+            image: 'https://images.unsplash.com/photo-1626074353765-517a681e40be?w=200',
           },
           {
             name: 'Mango Lassi',

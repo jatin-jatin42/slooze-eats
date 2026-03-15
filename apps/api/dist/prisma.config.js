@@ -8,7 +8,7 @@ exports.default = (0, config_1.defineConfig)({
         path: "prisma/migrations",
     },
     datasource: {
-        url: process.env["DATABASE_URL"],
+        url: process.env["POSTGRES_PRISMA_URL"] || process.env["POSTGRES_URL"] || process.env["DATABASE_URL"],
     },
 });
 //# sourceMappingURL=prisma.config.js.map

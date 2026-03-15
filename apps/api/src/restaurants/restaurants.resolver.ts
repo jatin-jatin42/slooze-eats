@@ -23,8 +23,9 @@ export class RestaurantsResolver {
   }
 
   @Query(() => String)
-  async menuItems(@Args('restaurantId') restaurantId: string) {
-    const data = await this.restaurantsService.findMenuItems(restaurantId);
+  async menuItems(@Args('restaurantId') restaurantId: string, @Context() context: any) {
+    const user = context.req.user;
+    const data = await this.restaurantsService.findMenuItems(restaurantId, user);
     return JSON.stringify(data);
   }
 }

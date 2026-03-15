@@ -30,7 +30,7 @@ export class OrdersResolver {
   ) {
     const user = context.req.user;
     const items = JSON.parse(itemsJson);
-    const data = await this.ordersService.createOrder(user.id, restaurantId, items);
+    const data = await this.ordersService.createOrder(user, restaurantId, items);
     return JSON.stringify(data);
   }
 

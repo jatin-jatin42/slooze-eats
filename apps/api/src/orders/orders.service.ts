@@ -40,10 +40,16 @@ export class OrdersService {
   }
 
   async createOrder(
-    userId: string,
+    user: { id: string; role: Role; country: Country },
     restaurantId: string,
     items: { menuItemId: string; quantity: number }[],
   ) {
+    const restaurant = await this.prisma.restaurant.findUnique({ where: { id: restaurantId } });
+    if (!restaurant) throw new NotFoundException('Restaurant not found');
+    if (user.role !== Role.ADMIN && restaurant.country !== user.country) {
+      throw new ForbiddenException('Cannot order from a restaurant outside your country');
+    }
+
     // Fetch menu items to compute prices
     const menuItems = await this.prisma.menuItem.findMany({
       where: { id: { in: items.map((i) => i.menuItemId) } },
@@ -63,7 +69,7 @@ export class OrdersService {
 
     return this.prisma.order.create({
       data: {
-        userId,
+        userId: user.id,
         restaurantId,
         totalAmount: total,
         items: { create: orderItems },
@@ -87,6 +93,9 @@ export class OrdersService {
 
     const order = await this.prisma.order.findUnique({ where: { id: orderId } });
     if (!order) throw new NotFoundException('Order not found');
+    if (user.role !== Role.ADMIN && order.userId !== user.id) {
+      throw new ForbiddenException('Cannot checkout another user\'s order');
+    }
     if (order.status !== OrderStatus.PENDING) {
       throw new ForbiddenException(`Order is already ${order.status}`);
     }
@@ -96,6 +105,9 @@ export class OrdersService {
       where: { id: paymentMethodId },
     });
     if (!pm) throw new NotFoundException('Payment method not found');
+    if (user.role !== Role.ADMIN && pm.userId !== user.id) {
+      throw new ForbiddenException('Cannot use another user\'s payment method');
+    }
 
     return this.prisma.order.update({
       where: { id: orderId },
@@ -116,6 +128,9 @@ export class OrdersService {
 
     const order = await this.prisma.order.findUnique({ where: { id: orderId } });
     if (!order) throw new NotFoundException('Order not found');
+    if (user.role !== Role.ADMIN && order.userId !== user.id) {
+      throw new ForbiddenException('Cannot cancel another user\'s order');
+    }
     if (order.status === OrderStatus.CANCELLED) {
       throw new ForbiddenException('Order is already cancelled');
     }

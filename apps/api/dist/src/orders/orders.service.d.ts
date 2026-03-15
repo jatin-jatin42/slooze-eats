@@ -110,7 +110,11 @@ export declare class OrdersService {
         updatedAt: Date;
         paymentMethodId: string | null;
     }>;
-    createOrder(userId: string, restaurantId: string, items: {
+    createOrder(user: {
+        id: string;
+        role: Role;
+        country: Country;
+    }, restaurantId: string, items: {
         menuItemId: string;
         quantity: number;
     }[]): Promise<{

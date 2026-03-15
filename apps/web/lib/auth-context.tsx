@@ -70,19 +70,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(JSON.parse(meData.me));
       setLoading(false);
     } else if (meError) {
-      setUser(null);
-      setLoading(false);
+      // Clear the invalid cookie from the backend so the middleware doesn't infinitely redirect
+      logoutMutation().catch(() => {}).finally(() => {
+        setUser(null);
+        setLoading(false);
+      });
     }
-  }, [meData, meError]);
+  }, [meData, meError, logoutMutation]);
 
   useEffect(() => {
     refetchMe()
       .then((result) => {
-        if (result.data?.me) setUser(JSON.parse(result.data.me));
-        setLoading(false);
+        if (result.data?.me) {
+          setUser(JSON.parse(result.data.me));
+          setLoading(false);
+        } else {
+          // No user data, maybe logged out or token invalid
+          logoutMutation().catch(() => {}).finally(() => setLoading(false));
+        }
       })
-      .catch(() => setLoading(false));
-  }, [refetchMe]);
+      .catch(() => {
+        logoutMutation().catch(() => {}).finally(() => setLoading(false));
+      });
+  }, [refetchMe, logoutMutation]);
 
   const login = useCallback(async (email: string, password: string) => {
     const result = await loginMutation({ variables: { email, password } });

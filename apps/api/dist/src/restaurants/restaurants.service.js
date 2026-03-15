@@ -38,7 +38,15 @@ let RestaurantsService = class RestaurantsService {
         }
         return restaurant;
     }
-    async findMenuItems(restaurantId) {
+    async findMenuItems(restaurantId, user) {
+        const restaurant = await this.prisma.restaurant.findUnique({
+            where: { id: restaurantId },
+        });
+        if (restaurant &&
+            user.role !== client_1.Role.ADMIN &&
+            restaurant.country !== user.country) {
+            throw new common_1.ForbiddenException('Access denied to menu items for this restaurant');
+        }
         return this.prisma.menuItem.findMany({
             where: { restaurantId },
         });

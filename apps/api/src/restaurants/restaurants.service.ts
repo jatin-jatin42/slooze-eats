@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Country, Role } from '@prisma/client';
 
@@ -33,7 +33,18 @@ export class RestaurantsService {
     return restaurant;
   }
 
-  async findMenuItems(restaurantId: string) {
+  async findMenuItems(restaurantId: string, user: { role: Role; country: Country }) {
+    const restaurant = await this.prisma.restaurant.findUnique({
+      where: { id: restaurantId },
+    });
+    // Country guard for non-Admin
+    if (
+      restaurant &&
+      user.role !== Role.ADMIN &&
+      restaurant.country !== user.country
+    ) {
+      throw new ForbiddenException('Access denied to menu items for this restaurant');
+    }
     return this.prisma.menuItem.findMany({
       where: { restaurantId },
     });

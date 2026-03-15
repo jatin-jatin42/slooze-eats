@@ -4,5 +4,5 @@ export declare class RestaurantsResolver {
     constructor(restaurantsService: RestaurantsService);
     restaurants(context: any): Promise<string>;
     restaurant(id: string, context: any): Promise<string>;
-    menuItems(restaurantId: string): Promise<string>;
+    menuItems(restaurantId: string, context: any): Promise<string>;
 }

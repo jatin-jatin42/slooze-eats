@@ -35,7 +35,7 @@ let OrdersResolver = class OrdersResolver {
     async createOrder(restaurantId, itemsJson, context) {
         const user = context.req.user;
         const items = JSON.parse(itemsJson);
-        const data = await this.ordersService.createOrder(user.id, restaurantId, items);
+        const data = await this.ordersService.createOrder(user, restaurantId, items);
         return JSON.stringify(data);
     }
     async checkoutOrder(orderId, paymentMethodId, context) {

@@ -25,10 +25,10 @@ export declare class AuthService {
             userId: string;
         }[];
     } & {
+        password: string;
         id: string;
         name: string;
         email: string;
-        password: string;
         role: import("@prisma/client").$Enums.Role;
         country: import("@prisma/client").$Enums.Country;
         createdAt: Date;

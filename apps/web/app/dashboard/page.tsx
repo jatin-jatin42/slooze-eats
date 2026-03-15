@@ -84,7 +84,9 @@ export default function DashboardHome() {
               🛒 You have {cart.length} item{cart.length !== 1 ? 's' : ''} in your cart
             </div>
             <div style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '2px' }}>
-              Total: {cart[0]?.price < 100 ? `$${cart.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2)}` : `₹${cart.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(0)}`}
+              Total: {user.country === 'INDIA' 
+                ? `₹${cart.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(0)}` 
+                : `$${cart.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2)}`}
             </div>
           </div>
           <Link href="/dashboard/checkout" className="btn btn-primary">
@@ -129,7 +131,7 @@ export default function DashboardHome() {
       <div className="grid-auto grid-auto-4">
         {cards.map((card) => (
           <Link
-            key={card.href}
+            key={card.title}
             href={card.href}
             style={{
               display: 'block',

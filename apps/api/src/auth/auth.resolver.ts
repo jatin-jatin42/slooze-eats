@@ -25,7 +25,6 @@ export class AuthResolver {
   }
 
   @Mutation(() => Boolean)
-  @UseGuards(JwtAuthGuard)
   async logout(@Context() context: any) {
     context.res.clearCookie('auth-token');
     return true;

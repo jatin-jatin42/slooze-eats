@@ -45,7 +45,10 @@ export declare class RestaurantsService {
         image: string | null;
         rating: number;
     }) | null>;
-    findMenuItems(restaurantId: string): Promise<{
+    findMenuItems(restaurantId: string, user: {
+        role: Role;
+        country: Country;
+    }): Promise<{
         id: string;
         name: string;
         image: string | null;

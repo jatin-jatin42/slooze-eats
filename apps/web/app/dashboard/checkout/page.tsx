@@ -50,7 +50,7 @@ export default function CheckoutPage() {
 
   const paymentMethods = pmData?.paymentMethods ? JSON.parse(pmData.paymentMethods) : [];
   const myPMs = paymentMethods.filter((pm: any) => pm.userId === user.id);
-  const isCurrency = cartTotal < 100;
+
 
   const handleCheckout = async () => {
     if (!selectedPM) { setError('Please select a payment method'); return; }
@@ -116,11 +116,11 @@ export default function CheckoutPage() {
                   <div>
                     <div style={{ fontWeight: 600 }}>{item.name}</div>
                     <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-                      {isCurrency ? `$${item.price.toFixed(2)}` : `₹${item.price}`} × {item.quantity}
+                      {user.country === 'INDIA' ? `₹${item.price}` : `$${item.price.toFixed(2)}`} × {item.quantity}
                     </div>
                   </div>
                   <div style={{ fontWeight: 700 }}>
-                    {isCurrency ? `$${(item.price * item.quantity).toFixed(2)}` : `₹${(item.price * item.quantity).toFixed(0)}`}
+                    {user.country === 'INDIA' ? `₹${(item.price * item.quantity).toFixed(0)}` : `$${(item.price * item.quantity).toFixed(2)}`}
                   </div>
                 </div>
               ))}
@@ -128,7 +128,7 @@ export default function CheckoutPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
               <span style={{ fontWeight: 700, fontSize: '18px' }}>Total</span>
               <span style={{ fontWeight: 800, fontSize: '24px', color: 'var(--accent)' }}>
-                {isCurrency ? `$${cartTotal.toFixed(2)}` : `₹${cartTotal.toFixed(0)}`}
+                {user.country === 'INDIA' ? `₹${cartTotal.toFixed(0)}` : `$${cartTotal.toFixed(2)}`}
               </span>
             </div>
           </div>
@@ -199,7 +199,7 @@ export default function CheckoutPage() {
             onClick={handleCheckout}
             disabled={loading || myPMs.length === 0}
           >
-            {loading ? 'Placing Order...' : `Place Order • ${isCurrency ? `$${cartTotal.toFixed(2)}` : `₹${cartTotal.toFixed(0)}`}`}
+            {loading ? 'Placing Order...' : `Place Order • ${user.country === 'INDIA' ? `₹${cartTotal.toFixed(0)}` : `$${cartTotal.toFixed(2)}`}`}
           </button>
         </div>
       </div>

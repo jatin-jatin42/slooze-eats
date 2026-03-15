@@ -33,10 +33,14 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+require("dotenv/config");
 const client_1 = require(".prisma/client");
-const adapter_libsql_1 = require("@prisma/adapter-libsql");
+const pg_1 = require("pg");
+const adapter_pg_1 = require("@prisma/adapter-pg");
 const bcrypt = __importStar(require("bcryptjs"));
-const adapter = new adapter_libsql_1.PrismaLibSql({ url: 'file:dev.db' });
+const connectionString = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL || process.env.DATABASE_URL;
+const pool = new pg_1.Pool({ connectionString });
+const adapter = new adapter_pg_1.PrismaPg(pool);
 const prisma = new client_1.PrismaClient({ adapter });
 async function main() {
     console.log('🌱 Seeding database...');
@@ -142,7 +146,7 @@ async function main() {
         data: {
             name: 'Biryani House',
             cuisine: 'Indian',
-            image: 'https://images.unsplash.com/photo-1563379091339-03246963d651?w=400',
+            image: 'https://images.unsplash.com/photo-1633945274405-b6c8069047b0?w=400',
             rating: 4.7,
             country: client_1.Country.INDIA,
             menuItems: {
@@ -152,7 +156,7 @@ async function main() {
                         description: 'Aromatic basmati rice with tender chicken',
                         price: 299,
                         category: 'Main Course',
-                        image: 'https://images.unsplash.com/photo-1563379091339-03246963d651?w=200',
+                        image: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=200',
                     },
                     {
                         name: 'Mutton Biryani',
@@ -214,7 +218,7 @@ async function main() {
                         description: 'Tandoor-baked bread with garlic butter',
                         price: 60,
                         category: 'Bread',
-                        image: 'https://images.unsplash.com/photo-1573237015185-5c35dbb5527c?w=200',
+                        image: 'https://images.unsplash.com/photo-1626074353765-517a681e40be?w=200',
                     },
                     {
                         name: 'Mango Lassi',

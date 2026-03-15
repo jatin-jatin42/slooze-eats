@@ -54,7 +54,6 @@ __decorate([
 ], AuthResolver.prototype, "login", null);
 __decorate([
     (0, graphql_1.Mutation)(() => Boolean),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, graphql_1.Context)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

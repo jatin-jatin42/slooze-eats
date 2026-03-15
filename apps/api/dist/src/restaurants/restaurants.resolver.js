@@ -32,8 +32,9 @@ let RestaurantsResolver = class RestaurantsResolver {
         const data = await this.restaurantsService.findOne(id, user);
         return JSON.stringify(data);
     }
-    async menuItems(restaurantId) {
-        const data = await this.restaurantsService.findMenuItems(restaurantId);
+    async menuItems(restaurantId, context) {
+        const user = context.req.user;
+        const data = await this.restaurantsService.findMenuItems(restaurantId, user);
         return JSON.stringify(data);
     }
 };
@@ -56,8 +57,9 @@ __decorate([
 __decorate([
     (0, graphql_1.Query)(() => String),
     __param(0, (0, graphql_1.Args)('restaurantId')),
+    __param(1, (0, graphql_1.Context)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], RestaurantsResolver.prototype, "menuItems", null);
 exports.RestaurantsResolver = RestaurantsResolver = __decorate([

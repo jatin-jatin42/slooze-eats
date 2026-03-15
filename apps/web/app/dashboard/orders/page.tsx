@@ -33,7 +33,6 @@ export default function OrdersPage() {
     return 'badge status-pending';
   };
 
-  const isCurrency = (amount: number) => amount < 100;
 
   return (
     <div className="fade-in">
@@ -112,9 +111,9 @@ export default function OrdersPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-primary)' }}>
-                      {isCurrency(order.totalAmount)
-                        ? `$${order.totalAmount.toFixed(2)}`
-                        : `₹${order.totalAmount.toFixed(0)}`}
+                      {order.restaurant?.country === 'INDIA'
+                        ? `₹${order.totalAmount.toFixed(0)}`
+                        : `$${order.totalAmount.toFixed(2)}`}
                     </div>
                   </div>
                   {canCheckout && order.status === 'PENDING' && (
