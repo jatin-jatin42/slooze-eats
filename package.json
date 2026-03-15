@@ -5,8 +5,7 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces",
-    "postinstall": "npm run prisma:generate",
+    "build": "npm run prisma:generate && npm run build --workspaces",
     "prisma:generate": "npx prisma generate --schema=apps/api/prisma/schema.prisma"
   },
   "dependencies": {
