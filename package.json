@@ -7,6 +7,10 @@
   "scripts": {
     "build": "npm run build --workspaces",
     "postinstall": "npm run prisma:generate",
-    "prisma:generate": "cd apps/api && npx prisma generate"
+    "prisma:generate": "npx prisma generate --schema=apps/api/prisma/schema.prisma"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.5.0",
+    "prisma": "^7.5.0"
   }
 }
