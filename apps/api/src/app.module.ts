@@ -14,7 +14,8 @@ import { PaymentsModule } from './payments/payments.module';
     ConfigModule.forRoot({ isGlobal: true }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      path: '/api/graphql',
+      autoSchemaFile: process.env.NODE_ENV === 'production' ? true : join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       playground: true,
       context: ({ req, res }: { req: any; res: any }) => ({ req, res }),

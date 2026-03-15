@@ -20,7 +20,7 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3001;
   await app.listen(port);
-  console.log(`🚀 Slooze API running at http://localhost:${port}/graphql`);
+  console.log(`🚀 Slooze API running at http://localhost:${port}/api/graphql`);
 }
 
 bootstrap();

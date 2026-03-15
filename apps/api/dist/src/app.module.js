@@ -26,7 +26,8 @@ exports.AppModule = AppModule = __decorate([
             config_1.ConfigModule.forRoot({ isGlobal: true }),
             graphql_1.GraphQLModule.forRoot({
                 driver: apollo_1.ApolloDriver,
-                autoSchemaFile: (0, path_1.join)(process.cwd(), 'src/schema.gql'),
+                path: '/api/graphql',
+                autoSchemaFile: process.env.NODE_ENV === 'production' ? true : (0, path_1.join)(process.cwd(), 'src/schema.gql'),
                 sortSchema: true,
                 playground: true,
                 context: ({ req, res }) => ({ req, res }),
