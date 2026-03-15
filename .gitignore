@@ -3,3 +3,4 @@ cache
 .env.local
 .env.vercel
 .env.vercel.local
+node_modules
