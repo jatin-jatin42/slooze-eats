@@ -6,55 +6,13 @@ export declare class RestaurantsService {
     findAll(user: {
         role: Role;
         country: Country;
-    }): Promise<({
-        menuItems: {
-            id: string;
-            name: string;
-            image: string | null;
-            description: string | null;
-            price: number;
-            category: string;
-            restaurantId: string;
-        }[];
-    } & {
-        id: string;
-        name: string;
-        country: import("@prisma/client").$Enums.Country;
-        cuisine: string;
-        image: string | null;
-        rating: number;
-    })[]>;
+    }): unknown;
     findOne(id: string, user: {
         role: Role;
         country: Country;
-    }): Promise<({
-        menuItems: {
-            id: string;
-            name: string;
-            image: string | null;
-            description: string | null;
-            price: number;
-            category: string;
-            restaurantId: string;
-        }[];
-    } & {
-        id: string;
-        name: string;
-        country: import("@prisma/client").$Enums.Country;
-        cuisine: string;
-        image: string | null;
-        rating: number;
-    }) | null>;
+    }): unknown;
     findMenuItems(restaurantId: string, user: {
         role: Role;
         country: Country;
-    }): Promise<{
-        id: string;
-        name: string;
-        image: string | null;
-        description: string | null;
-        price: number;
-        category: string;
-        restaurantId: string;
-    }[]>;
+    }): unknown;
 }
