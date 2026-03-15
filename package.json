@@ -5,15 +5,12 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "npm run prisma:generate && npm run build --workspaces && rm -rf .next && cp -r apps/web/.next . && cp -r apps/web/public . || true",
+    "build": "npm run prisma:generate && npm run build --workspaces",
     "prisma:generate": "npx prisma generate --schema=apps/api/prisma/schema.prisma"
   },
   "dependencies": {
     "@prisma/client": "^7.5.0",
-    "prisma": "^7.5.0",
-    "next": "^15.1.6",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "prisma": "^7.5.0"
   },
   "optionalDependencies": {
     "lightningcss-linux-x64-gnu": "1.32.0",
