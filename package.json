@@ -5,7 +5,7 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "npm run prisma:generate && npm run build --workspaces",
+    "build": "npm run prisma:generate && npm run build --workspaces && cp -r apps/web/.next . && cp -r apps/web/public .",
     "prisma:generate": "npx prisma generate --schema=apps/api/prisma/schema.prisma"
   },
   "dependencies": {
