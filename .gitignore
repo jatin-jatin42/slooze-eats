@@ -1,1 +1,5 @@
 cache
+.env
+.env.local
+.env.vercel
+.env.vercel.local
