@@ -1,0 +1,24 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Mutation {
+  addPaymentMethod(last4: String!, name: String!, type: String!, userId: String!): String!
+  cancelOrder(orderId: String!): String!
+  checkoutOrder(orderId: String!, paymentMethodId: String!): String!
+  createOrder(items: String!, restaurantId: String!): String!
+  deletePaymentMethod(id: String!): String!
+  login(email: String!, password: String!): String!
+  logout: Boolean!
+  updatePaymentMethod(data: String!, id: String!): String!
+}
+
+type Query {
+  me: String
+  menuItems(restaurantId: String!): String!
+  order(id: String!): String!
+  orders: String!
+  paymentMethods: String!
+  restaurant(id: String!): String
+  restaurants: String!
+}
