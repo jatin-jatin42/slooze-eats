@@ -11,6 +11,9 @@
   "dependencies": {
     "@prisma/client": "^7.5.0",
     "prisma": "^7.5.0"
+  },
+  "optionalDependencies": {
+    "lightningcss-linux-x64-gnu": "1.32.0"
   }
 }
 
