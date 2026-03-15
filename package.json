@@ -1,0 +1,12 @@
+{
+  "name": "slooze-eats",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "postinstall": "npm run prisma:generate",
+    "prisma:generate": "cd apps/api && npx prisma generate"
+  }
+}
