@@ -6,10 +6,31 @@ export declare class PaymentsService {
     findAll(user: {
         id: string;
         role: Role;
-    }): unknown;
+    }): Promise<({
+        user: {
+            id: string;
+            name: string;
+        };
+    } & {
+        id: string;
+        name: string;
+        createdAt: Date;
+        type: import("@prisma/client").$Enums.CardType;
+        last4: string;
+        isDefault: boolean;
+        userId: string;
+    })[]>;
     addPaymentMethod(userId: string, type: CardType, last4: string, name: string, user: {
         role: Role;
-    }): unknown;
+    }): Promise<{
+        id: string;
+        name: string;
+        createdAt: Date;
+        type: import("@prisma/client").$Enums.CardType;
+        last4: string;
+        isDefault: boolean;
+        userId: string;
+    }>;
     updatePaymentMethod(id: string, data: {
         type?: CardType;
         last4?: string;
@@ -17,8 +38,24 @@ export declare class PaymentsService {
         isDefault?: boolean;
     }, user: {
         role: Role;
-    }): unknown;
+    }): Promise<{
+        id: string;
+        name: string;
+        createdAt: Date;
+        type: import("@prisma/client").$Enums.CardType;
+        last4: string;
+        isDefault: boolean;
+        userId: string;
+    }>;
     deletePaymentMethod(id: string, user: {
         role: Role;
-    }): unknown;
+    }): Promise<{
+        id: string;
+        name: string;
+        createdAt: Date;
+        type: import("@prisma/client").$Enums.CardType;
+        last4: string;
+        isDefault: boolean;
+        userId: string;
+    }>;
 }

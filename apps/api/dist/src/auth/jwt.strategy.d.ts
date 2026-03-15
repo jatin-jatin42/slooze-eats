@@ -1,7 +1,7 @@
 import { Strategy } from 'passport-jwt';
 import { PrismaService } from '../prisma/prisma.service';
-declare const JwtStrategy_base: new (...args: [opt: any] | [opt: any]) => InstanceType<typeof Strategy> & {
-    validate(...args: any[]): unknown | Promise<unknown>;
+declare const JwtStrategy_base: new (...args: [opt: import("passport-jwt").StrategyOptionsWithRequest] | [opt: import("passport-jwt").StrategyOptionsWithoutRequest]) => Strategy & {
+    validate(...args: any[]): unknown;
 };
 export declare class JwtStrategy extends JwtStrategy_base {
     private prisma;
@@ -11,6 +11,14 @@ export declare class JwtStrategy extends JwtStrategy_base {
         email: string;
         role: string;
         country: string;
-    }): unknown;
+    }): Promise<{
+        password: string;
+        id: string;
+        name: string;
+        email: string;
+        role: import("@prisma/client").$Enums.Role;
+        country: import("@prisma/client").$Enums.Country;
+        createdAt: Date;
+    } | null>;
 }
 export {};
