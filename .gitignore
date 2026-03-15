@@ -1,6 +1,30 @@
-cache
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+
+# Next.js
+.next/
+out/
+
+# Build outputs
+dist
+build
+*.tsbuildinfo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Env files
 .env
 .env.local
+.env.production
 .env.vercel
 .env.vercel.local
-node_modules
+
+# Prisma
+/apps/api/prisma/schema.prisma.backup
