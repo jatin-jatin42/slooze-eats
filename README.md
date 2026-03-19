@@ -1,18 +1,23 @@
-# 🍔 Slooze Eats - Modern Food Delivery Platform
+# 🍔 Slooze Eats — Modern Food Delivery Platform
 
 A high-performance, full-stack monorepo food delivery application built with **Next.js 15**, **NestJS**, **GraphQL**, and **Prisma**.
 
 ## 🚀 Tech Stack
 
-- **Frontend**: [Next.js 15](https://nextjs.org/) (App Router, Turbopack), [Apollo Client](https://www.apollographql.com/docs/react/), Tailwind CSS 4.
-- **Backend**: [NestJS](https://nestjs.com/), [GraphQL (Apollo)](https://docs.nestjs.com/graphql/quick-start), [Passport.js](https://www.passportjs.org/).
-- **Database**: [PostgreSQL (Neon)](https://neon.tech/) with [Prisma ORM](https://www.prisma.io/).
-- **Monorepo**: NPM Workspaces.
-- **Deployment**: [Vercel](https://vercel.com/).
+| Layer | Technology |
+|---|---|
+| **Frontend** | [Next.js 15](https://nextjs.org/) (App Router, Turbopack), [Apollo Client](https://www.apollographql.com/docs/react/), Tailwind CSS 4 |
+| **Backend** | [NestJS](https://nestjs.com/), [GraphQL (Apollo)](https://docs.nestjs.com/graphql/quick-start), [Passport.js](https://www.passportjs.org/) |
+| **Database** | [PostgreSQL](https://www.postgresql.org/) with [Prisma ORM](https://www.prisma.io/) |
+| **Containerization** | [Docker](https://www.docker.com/) + [Docker Compose](https://docs.docker.com/compose/) |
+| **Monorepo** | NPM Workspaces |
+| **Deployment** | [Vercel](https://vercel.com/) |
 
 ---
 
-## 🛠️ Local Development Setup
+## ⚡ Quick Start (Recommended — Docker)
+
+> Prerequisites: [Docker Desktop](https://www.docker.com/products/docker-desktop/) and [Node.js 20+](https://nodejs.org/)
 
 ### 1. Clone the repository
 ```bash
@@ -20,88 +25,160 @@ git clone https://github.com/jatin-jatin42/slooze-eats.git
 cd slooze-eats
 ```
 
-### 2. Install Dependencies
+### 2. Start the backend services (PostgreSQL + API)
 ```bash
-npm install
+docker compose up -d --build
 ```
+This single command:
+- Starts a **PostgreSQL 16** database container
+- Builds and starts the **NestJS GraphQL API** on port `3001`
+- Automatically synchronizes the database schema on startup using `prisma db push`
 
-### 3. Environment Variables
-Create a `.env` file in the root directory:
+> On subsequent runs (no code changes), just use `docker compose up -d`.
 
-```env
-# Database
-DATABASE_URL="postgresql://user:password@localhost:5432/neondb?sslmode=require"
-
-# Auth
-JWT_SECRET="your-development-secret-key"
-
-# URLs
-NEXT_PUBLIC_API_URL="http://localhost:3001/api/graphql"
-FRONTEND_URL="http://localhost:3000"
-```
-
-### 4. Database Initialization
+### 3. Start the frontend
 ```bash
-# Generate Prisma Client
-npm run prisma:generate
-
-# Run Migrations
-npx prisma migrate dev --schema=apps/api/prisma/schema.prisma
-
-# (Optional) Seed the database
-npm run db:seed --prefix apps/api
+npm install      # first time only
+npm run dev
 ```
 
-### 5. Run the Application
-Launch both Frontend and Backend concurrently:
+The app is now running at:
+
+| Service | URL |
+|---|---|
+| 🌐 Frontend (Next.js) | http://localhost:3000 |
+| 🔌 GraphQL API | http://localhost:3001/api/graphql |
+| 🗄️ PostgreSQL | localhost:5432 |
+
+### 4. Seed the database (First run only)
+If this is your first time setting up the project, seed the database with initial users, restaurants, and mock data:
 ```bash
-# In separate terminals or using concurrently
-npm run dev --workspace web    # Frontend on http://localhost:3000
-npm run start:dev --workspace api # Backend on http://localhost:3001
+docker compose exec api npm run db:seed
 ```
-
----
-
-## 🌐 Deployment (Vercel Monorepo)
-
-For the most stable setup, deploy the **Frontend** and **Backend** as two separate project on Vercel.
-
-### Project A: Frontend (`slooze-eats-web`)
-1. **Root Directory**: `apps/web`
-2. **Framework Preset**: `Next.js`
-3. **Environment Variables**:
-   - `NEXT_PUBLIC_API_URL`: Your deployed API URL (e.g., `https://api.domain.com/api/graphql`)
-
-### Project B: Backend (`slooze-eats-api`)
-1. **Root Directory**: `apps/api`
-2. **Framework Preset**: `Other`
-3. **Build Command**:
-   `cd ../.. && npm install && npm run prisma:generate && cd apps/api && npm run build`
-4. **Install Command**: `cd ../.. && npm install`
-5. **Output Directory**: `dist`
-6. **Environment Variables**:
-   - `DATABASE_URL`: Your Production Neon URL (include `&pgbouncer=true`).
-   - `JWT_SECRET`: Same secret used in local/shared.
-   - `FRONTEND_URL`: Your deployed Frontend URL.
 
 ---
 
 ## 🏗️ Project Structure
 
 ```text
-.
+slooze-eats/
 ├── apps/
-│   ├── web/          # Next.js Frontend
-│   └── api/          # NestJS Backend + Prisma Schema
-├── package.json      # Root workspace configuration
-└── vercel.json       # Routing rules for production
+│   ├── web/                  # Next.js 15 Frontend
+│   │   ├── app/              # App Router pages
+│   │   ├── components/       # Reusable UI components
+│   │   └── lib/              # Apollo client, auth context
+│   └── api/                  # NestJS Backend
+│       ├── src/              # Application source
+│       ├── prisma/           # Schema & seed data
+│       └── Dockerfile        # API container definition
+├── docker-compose.yml        # Orchestrates DB + API containers
+├── .dockerignore             # Excludes unnecessary files from build
+├── .env                      # Root environment variables
+└── package.json              # Root workspace config + scripts
 ```
 
+---
+
+## 🐳 Docker Architecture
+
+```
+┌─────────────────────────────────────────────┐
+│              Docker Compose                  │
+│                                             │
+│  ┌──────────────────┐  ┌─────────────────┐  │
+│  │  postgres:16     │  │  slooze-api     │  │
+│  │  port: 5432      │◄─│  port: 3001     │  │
+│  └──────────────────┘  └─────────────────┘  │
+└─────────────────────────────────────────────┘
+          ▲                       ▲
+          │ (not needed)          │ http://localhost:3001
+          │                       │
+┌─────────────────────────────────────────────┐
+│         Next.js Dev Server (host)            │
+│                  port: 3000                  │
+└─────────────────────────────────────────────┘
+```
+
+---
+
+## 🛠️ Manual / Non-Docker Setup
+
+<details>
+<summary>Click to expand</summary>
+
+### 1. Install dependencies
+```bash
+npm install
+```
+
+### 2. Environment variables
+Create a `.env` file at the root:
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/postgres?schema=public"
+JWT_SECRET="your-development-secret-key"
+NEXT_PUBLIC_API_URL="http://localhost:3001/api/graphql"
+FRONTEND_URL="http://localhost:3000"
+```
+
+### 3. Database setup
+```bash
+# Generate Prisma Client
+npm run prisma:generate
+
+# Run migrations
+npx prisma migrate dev --schema=apps/api/prisma/schema.prisma
+
+# (Optional) Seed the database
+cd apps/api && npm run db:seed
+```
+
+### 4. Run services in separate terminals
+```bash
+# Terminal 1 — API (http://localhost:3001)
+cd apps/api && npm run start:dev
+
+# Terminal 2 — Frontend (http://localhost:3000)
+npm run dev
+```
+
+</details>
+
+---
+
+## 🌐 Deployment (Vercel)
+
+Deploy the **frontend** and **backend** as two separate Vercel projects.
+
+### Project A — Frontend (`slooze-eats-web`)
+| Setting | Value |
+|---|---|
+| Root Directory | `apps/web` |
+| Framework Preset | `Next.js` |
+| `NEXT_PUBLIC_API_URL` | `https://<your-api-domain>/api/graphql` |
+
+### Project B — Backend (`slooze-eats-api`)
+| Setting | Value |
+|---|---|
+| Root Directory | `apps/api` |
+| Framework Preset | `Other` |
+| Build Command | `cd ../.. && npm install && npm run prisma:generate && cd apps/api && npm run build` |
+| Install Command | `cd ../.. && npm install` |
+| Output Directory | `dist` |
+
+**Environment variables for the API:**
+- `DATABASE_URL` — Production PostgreSQL URL
+- `JWT_SECRET` — Shared secret key
+- `FRONTEND_URL` — Deployed frontend URL
+
+---
+
 ## 🔒 Security & Authentication
-- **JWT**: Handled via `Passport-JWT` with `httpOnly` cookie storage for security.
-- **Role-Based Access**: Support for ADMIN, MANAGER, and MEMBER roles.
-- **CORS**: Configured to restrict access only to the specified `FRONTEND_URL`.
+
+- **JWT** — Handled via `Passport-JWT` with `httpOnly` cookie storage
+- **Role-Based Access** — `ADMIN`, `MANAGER`, and `MEMBER` roles
+- **CORS** — Restricted to the configured `FRONTEND_URL`
 
 ## 🧬 GraphQL API
-The API is available at `/api/graphql`.
-Explore the schema and run queries using the **Apollo Sandbox** while in development mode.
+
+The API is available at `/api/graphql`.  
+Explore the schema and run queries using the **Apollo Sandbox** in development mode.

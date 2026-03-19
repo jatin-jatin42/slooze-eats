@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: slooze-eats-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: jatin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jatin -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./apps/api      # only send the api folder as build context
+      dockerfile: Dockerfile
+    container_name: slooze-eats-api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://jatin:password@postgres:5432/postgres?schema=public
+      JWT_SECRET: slooze-production-secret-2026
+      FRONTEND_URL: http://localhost:3000
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

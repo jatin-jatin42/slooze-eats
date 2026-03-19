@@ -5,6 +5,7 @@
     "apps/*"
   ],
   "scripts": {
+    "dev": "npm run dev --workspace=apps/web",
     "build": "npm run prisma:generate && npm run build --workspaces && rm -rf .next && cp -r apps/web/.next . && cp -r apps/web/public . || true",
     "prisma:generate": "npx prisma generate --schema=apps/api/prisma/schema.prisma"
   },
