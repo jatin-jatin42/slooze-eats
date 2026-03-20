@@ -3,7 +3,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -20,6 +19,7 @@ model User {
   country        Country
   orders         Order[]
   paymentMethods PaymentMethod[]
+  sharedCarts    SharedCartParticipant[]
   createdAt      DateTime        @default(now())
 }
 
@@ -32,6 +32,7 @@ model Restaurant {
   country   Country
   menuItems MenuItem[]
   orders    Order[]
+  sharedCarts SharedCart[]
 }
 
 model MenuItem {
@@ -44,6 +45,7 @@ model MenuItem {
   restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
   restaurantId String
   orderItems   OrderItem[]
+  sharedCartItems SharedCartItem[]
 }
 
 model Order {
@@ -104,4 +106,41 @@ enum CardType {
   VISA
   MASTERCARD
   AMEX
+}
+
+model SharedCart {
+  id           String     @id @default(uuid())
+  restaurantId String
+  country      Country
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  participants SharedCartParticipant[]
+  items        SharedCartItem[]
+}
+
+model SharedCartParticipant {
+  id           String     @id @default(uuid())
+  cartId       String
+  userId       String
+  joinedAt     DateTime   @default(now())
+
+  cart         SharedCart @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id])
+
+  @@unique([cartId, userId])
+}
+
+model SharedCartItem {
+  id           String     @id @default(uuid())
+  cartId       String
+  menuItemId   String
+  quantity     Int
+
+  cart         SharedCart @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  menuItem     MenuItem   @relation(fields: [menuItemId], references: [id])
+
+  @@unique([cartId, menuItemId])
 }

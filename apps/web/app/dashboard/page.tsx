@@ -1,12 +1,22 @@
 'use client';
 
 import Link from 'next/link';
+import { useQuery, gql } from '@apollo/client';
 import { useAuth, useCanCheckout, useCanManagePayments } from '../../lib/auth-context';
+
+const AVAILABLE_SHARED_CARTS = gql`
+  query AvailableSharedCarts {
+    availableSharedCarts
+  }
+`;
 
 export default function DashboardHome() {
   const { user, cart } = useAuth();
   const canCheckout = useCanCheckout();
   const canManagePayments = useCanManagePayments();
+
+  const { data: sharedCartsData } = useQuery(AVAILABLE_SHARED_CARTS);
+  const sharedCarts = sharedCartsData?.availableSharedCarts ? JSON.parse(sharedCartsData.availableSharedCarts) : [];
 
   if (!user) return null;
 
@@ -125,6 +135,47 @@ export default function DashboardHome() {
           ))}
         </div>
       </div>
+
+      {/* Shared Carts */}
+      {sharedCarts.length > 0 && (
+        <div style={{ marginBottom: '32px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            🤝 Active Shared Carts ({user.country === 'INDIA' ? 'India' : 'America'})
+            <span className="badge badge-admin" style={{ fontSize: '11px', padding: '2px 8px' }}>{sharedCarts.length} Session{sharedCarts.length !== 1 ? 's' : ''}</span>
+          </h2>
+          <div className="grid-auto grid-auto-3">
+            {sharedCarts.map((cart: any) => (
+              <Link key={cart.id} href={`/dashboard/shared-cart/${cart.id}`} style={{ textDecoration: 'none' }}>
+                <div className="card" style={{ padding: '20px', border: '1px solid rgba(255,107,53,0.3)', transition: 'all 0.2s' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                    <h3 style={{ fontSize: '16px', fontWeight: 700 }}>{cart.restaurant.name}</h3>
+                    <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{new Date(cart.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', marginLeft: '4px' }}>
+                      {cart.participants.map((p: any) => (
+                        <div key={p.userId} style={{
+                          width: '24px', height: '24px', borderRadius: '50%', background: 'var(--accent)', color: 'white',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 'bold',
+                          border: '2px solid var(--bg-primary)', marginLeft: '-8px'
+                        }}>
+                          {p.user.name.charAt(0).toUpperCase()}
+                        </div>
+                      ))}
+                    </div>
+                    <span style={{ fontSize: '12px', color: 'var(--text-secondary)', marginLeft: '4px' }}>
+                      {cart.participants.length} participant{cart.participants.length !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  <button className="btn btn-secondary" style={{ width: '100%', padding: '8px 0', fontSize: '13px' }}>
+                    View & Join Cart →
+                  </button>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Action cards */}
       <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>Quick Actions</h2>

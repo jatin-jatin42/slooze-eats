@@ -9,6 +9,7 @@ import { useAuth, useCanCheckout } from '../../../lib/auth-context';
 const PAYMENT_METHODS_QUERY = gql`query GetPMs { paymentMethods }`;
 const CREATE_ORDER = gql`mutation CreateOrder($restaurantId: String!, $items: String!) { createOrder(restaurantId: $restaurantId, items: $items) }`;
 const CHECKOUT = gql`mutation Checkout($orderId: String!, $paymentMethodId: String!) { checkoutOrder(orderId: $orderId, paymentMethodId: $paymentMethodId) }`;
+const CREATE_SHARED_CART = gql`mutation CreateSharedCart($restaurantId: String!, $items: String!) { createSharedCart(restaurantId: $restaurantId, items: $items) }`;
 
 export default function CheckoutPage() {
   const { user, cart, clearCart, cartTotal, cartRestaurantId } = useAuth();
@@ -22,6 +23,7 @@ export default function CheckoutPage() {
   const { data: pmData } = useQuery(PAYMENT_METHODS_QUERY);
   const [createOrder] = useMutation(CREATE_ORDER);
   const [checkoutOrder] = useMutation(CHECKOUT);
+  const [createSharedCart] = useMutation(CREATE_SHARED_CART);
 
   if (!user) return null;
 
@@ -73,6 +75,25 @@ export default function CheckoutPage() {
     }
   };
 
+  const handleShareCart = async () => {
+    if (!cartRestaurantId) return;
+    setLoading(true);
+    setError('');
+    try {
+      const items = cart.map((i) => ({ menuItemId: i.menuItemId, quantity: i.quantity }));
+      const result = await createSharedCart({
+        variables: { restaurantId: cartRestaurantId, items: JSON.stringify(items) },
+      });
+      const sharedCart = JSON.parse(result.data.createSharedCart);
+      clearCart();
+      router.push(`/dashboard/shared-cart/${sharedCart.id}`);
+    } catch (e: any) {
+      setError(e.message || 'Failed to share cart');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (success) {
     return (
       <div className="fade-in" style={{ textAlign: 'center', padding: '80px 24px' }}>
@@ -97,7 +118,12 @@ export default function CheckoutPage() {
 
   return (
     <div className="fade-in">
-      <h1 style={{ fontSize: '32px', fontWeight: 800, marginBottom: '32px' }}>🛒 Checkout</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+        <h1 style={{ fontSize: '32px', fontWeight: 800 }}>🛒 Checkout</h1>
+        <button className="btn btn-secondary" onClick={handleShareCart} disabled={loading}>
+          🤝 Share Cart Session
+        </button>
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '24px', alignItems: 'start' }}>
         {/* Cart items */}
